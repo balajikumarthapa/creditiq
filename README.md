@@ -1,6 +1,6 @@
 # 🧠 CreditIQ — AI-Powered Credit Risk Intelligence Platform
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://creditiq-amanhari.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](C:\Users\ELCOT\Pictures\Screenshots\project_image\Screenshot 2026-05-21 203312.png)
 
 > A Transparent Machine Learning Model for Credit Risk Evaluation in Supply Chain Finance
 
