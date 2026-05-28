@@ -113,6 +113,13 @@ def show_prediction(
 
         st.session_state.history.append(record)
 
+        from components.db_auth import save_prediction_record
+        save_prediction_record(
+            user=st.session_state.user_name,
+            timestamp=record["Timestamp"],
+            record=record
+        )
+
         st.markdown("<br>", unsafe_allow_html=True)
 
         r1, r2 = st.columns([1, 1])

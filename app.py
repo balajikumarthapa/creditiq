@@ -58,6 +58,8 @@ load_css(CSS_PATH)
 # CREATE DATABASE TABLE
 # =========================================================
 create_users_table()
+from components.db_auth import create_history_table
+create_history_table()
 
 
 # =========================================================
