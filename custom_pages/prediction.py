@@ -462,55 +462,142 @@ def show_prediction(
 
         batch_df = pd.read_csv(uploaded_file)
 
-        st.markdown("**Preview of uploaded data:**")
-        st.dataframe(batch_df.head(), use_container_width=True)
-
-        batch_processed = batch_df.copy()
-
-        if "loan_status" in batch_processed.columns:
-            batch_processed = batch_processed.drop(
-                columns=["loan_status"]
-            )
-
-        if "loan_percent_income" not in batch_processed.columns:
-            if (
-                "loan_amnt"     in batch_processed.columns and
-                "person_income" in batch_processed.columns
-            ):
-                batch_processed["loan_percent_income"] = (
-                    batch_processed["loan_amnt"] /
-                    batch_processed["person_income"]
-                )
-
-        for col in batch_processed.columns:
-            if col in encoders:
-                batch_processed[col] = encoders[col].transform(
-                    batch_processed[col]
-                )
-
-        with st.spinner("Running predictions..."):
-
-            batch_preds = model.predict(batch_processed)
-            batch_proba = (
-                model.predict_proba(batch_processed)[:, 1] * 100
-            )
-
-        batch_df["Risk Score (%)"] = batch_proba.round(2)
-        batch_df["Prediction"]     = [
-            "High Risk" if p == 1 else "Low Risk"
-            for p in batch_preds
+        # ─── Required columns ────────────────────────────
+        REQUIRED_COLS = [
+            'person_age',
+            'person_income',
+            'person_home_ownership',
+            'person_emp_length',
+            'loan_intent',
+            'loan_grade',
+            'loan_amnt',
+            'loan_int_rate',
+            'cb_person_default_on_file',
+            'cb_person_cred_hist_length'
         ]
 
-        st.markdown("**Prediction Results:**")
-        st.dataframe(batch_df, use_container_width=True)
+        # ─── Validate columns ────────────────────────────
+        missing_cols = [
+            c for c in REQUIRED_COLS
+            if c not in batch_df.columns
+        ]
 
-        csv_output = batch_df.to_csv(index=False).encode("utf-8")
+        if missing_cols:
 
-        st.download_button(
-            label="⬇ Download Results CSV",
-            data=csv_output,
-            file_name="creditiq_batch_results.csv",
-            mime="text/csv"
-        )
+            st.error(
+                "Your CSV has wrong column names. "
+                "Please use the exact column names below."
+            )
+
+            st.markdown("""
+            <div class='section-card'>
+            <h3>Required CSV Column Names</h3>
+            <p style='color:#DDE6F2;'>
+            Your CSV file must have exactly these column names:
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.code(
+                "person_age\n"
+                "person_income\n"
+                "person_home_ownership\n"
+                "person_emp_length\n"
+                "loan_intent\n"
+                "loan_grade\n"
+                "loan_amnt\n"
+                "loan_int_rate\n"
+                "cb_person_default_on_file\n"
+                "cb_person_cred_hist_length"
+            )
+
+            st.markdown("""
+            <div class='section-card'>
+            <p style='color:#f59e0b;font-weight:600;'>
+            Download the sample CSV below,
+            fill your data and upload again.
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Provide sample CSV for download
+            sample_data = pd.DataFrame([{
+                'person_age': 25,
+                'person_income': 50000,
+                'person_home_ownership': 'RENT',
+                'person_emp_length': 3,
+                'loan_intent': 'PERSONAL',
+                'loan_grade': 'B',
+                'loan_amnt': 10000,
+                'loan_int_rate': 11.5,
+                'cb_person_default_on_file': 'N',
+                'cb_person_cred_hist_length': 3
+            }])
+
+            st.download_button(
+                label="⬇ Download Sample CSV Template",
+                data=sample_data.to_csv(index=False).encode("utf-8"),
+                file_name="creditiq_sample_template.csv",
+                mime="text/csv"
+            )
+
+        else:
+
+            st.markdown("**Preview of uploaded data:**")
+            st.dataframe(batch_df.head(), use_container_width=True)
+
+            batch_processed = batch_df.copy()
+
+            if "loan_status" in batch_processed.columns:
+                batch_processed = batch_processed.drop(
+                    columns=["loan_status"]
+                )
+
+            if "loan_percent_income" not in batch_processed.columns:
+                if (
+                    "loan_amnt"     in batch_processed.columns and
+                    "person_income" in batch_processed.columns
+                ):
+                    batch_processed["loan_percent_income"] = (
+                        batch_processed["loan_amnt"] /
+                        batch_processed["person_income"]
+                    )
+
+            for col in batch_processed.columns:
+                if col in encoders:
+                    batch_processed[col] = encoders[col].transform(
+                        batch_processed[col]
+                    )
+
+            with st.spinner("Running predictions..."):
+
+                batch_processed = batch_processed[
+                    model.feature_names_in_
+                ]
+
+                batch_preds = model.predict(batch_processed)
+                batch_proba = (
+                    model.predict_proba(batch_processed)[:, 1] * 100
+                )
+
+            batch_df["Risk Score (%)"] = batch_proba.round(2)
+            batch_df["Prediction"]     = [
+                "High Risk" if p == 1 else "Low Risk"
+                for p in batch_preds
+            ]
+
+            st.markdown("**Prediction Results:**")
+            st.dataframe(batch_df, use_container_width=True)
+
+            csv_output = batch_df.to_csv(
+                index=False
+            ).encode("utf-8")
+
+            st.download_button(
+                label="⬇ Download Results CSV",
+                data=csv_output,
+                file_name="creditiq_batch_results.csv",
+                mime="text/csv"
+            )
         
         
