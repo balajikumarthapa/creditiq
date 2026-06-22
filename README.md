@@ -2,7 +2,7 @@
 
 ![CreditIQ Login](assets/login.png)
 
-[![Open in Streamlit](https://img.shields.io/badge/Streamlit-Live_App-FF4B4B?style=for-the-badge&logo=streamlit)](https://creditiq-amanhari.streamlit.app)
+[![Open in Streamlit](https://img.shields.io/badge/Streamlit-Live_App-FF4B4B?style=for-the-badge&logo=streamlit)](https://balajicreditiq.streamlit.app)
 > A Transparent Machine Learning Model for Credit Risk Evaluation in Supply Chain Finance
 
 ---
