@@ -9,7 +9,7 @@
 
 ## 🚀 Live Demo
 
-👉 **[https://creditiq-amanhari.streamlit.app](https://creditiq-amanhari.streamlit.app)**
+👉 **[https://creditanalyzis.streamlit.app](https://creditanalyzis.streamlit.app)**
 
 **Demo Login:**
 - Email: `admin@creditiq.com`
